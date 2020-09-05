@@ -1,0 +1,59 @@
+﻿@page "/"
+@using Blazor.Extensions.Canvas.Canvas2D;
+@using Blazor.Extensions;
+@inject BrowserService service;
+<div @onpointerup=PointerUp style="
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    border: solid;
+    padding:0 !important;
+    transform: translate(-50%, -50%);">
+    <BECanvas Width="CanvasHeight"
+              Height="CanvasWidth"
+              @ref="_canvasReference"></BECanvas>
+    <div style="position: fixed;">
+        <button>@Color</button>
+    </div>
+</div>
+
+@code
+{
+    private Canvas2DContext ctx;
+    protected BECanvasComponent _canvasReference;
+    public int Height { get; private set; }
+    public int Width { get; private set; }
+    public int CanvasHeight { get; } = 600;
+    public int CanvasWidth { get; } = 600;
+
+    public string Color { get; set; } = "Чёрный";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.ctx = await this._canvasReference.CreateCanvas2DAsync();
+        }
+    }
+
+    async Task PointerUp(PointerEventArgs e)
+    {
+        await GetDimensions();
+        await ctx.BeginPathAsync();
+        await ctx.ArcAsync(
+            e.ClientX - ((Width - CanvasWidth) / 2),
+            e.ClientY - (Height - CanvasHeight) / 2,
+            2, 0, 2 * Math.PI);
+        await ctx.ClosePathAsync();
+        await ctx.SetFillStyleAsync("black");
+        await ctx.FillAsync();
+        StateHasChanged();
+    }
+
+    async Task GetDimensions()
+    {
+        var dimension = await service.GetDimensions();
+        Height = dimension.Height;
+        Width = dimension.Width;
+    }
+}
