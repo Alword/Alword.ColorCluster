@@ -120,6 +120,9 @@
   <data name="Blue" xml:space="preserve">
     <value>Синий</value>
   </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
   <data name="Red" xml:space="preserve">
     <value>Красный</value>
   </data>

@@ -18,6 +18,7 @@
     <div style="position: fixed;">
         <button @onclick="ChangeColor">@Color</button>
         <button @onclick="CalculateLine">@Strings.Separate</button>
+        <button @onclick="Clear">@Strings.Clear</button>
     </div>
 </div>
 
@@ -90,9 +91,15 @@
         await ctx.MoveToAsync(line.Point1.X, line.Point1.Y);
         await ctx.LineToAsync(line.Point2.X, line.Point2.Y);
         await ctx.StrokeAsync();
-        await ctx.SetStrokeStyleAsync("green");
+        await ctx.SetStrokeStyleAsync("magenta");
         await ctx.FillAsync();
         await ctx.ClosePathAsync();
+        StateHasChanged();
+    }
+    async Task Clear()
+    {
+        dots.Clear();
+        await ctx.ClearRectAsync(0, 0, CanvasWidth, CanvasHeight);
         StateHasChanged();
     }
 }

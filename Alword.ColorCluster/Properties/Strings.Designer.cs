@@ -70,6 +70,15 @@ namespace Alword.ColorCluster.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Очистить.
+        /// </summary>
+        public static string Clear {
+            get {
+                return ResourceManager.GetString("Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Красный.
         /// </summary>
         public static string Red {

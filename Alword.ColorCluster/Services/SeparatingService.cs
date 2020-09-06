@@ -21,7 +21,11 @@ namespace Alword.ColorCluster.Services
 
         public void AddPrimary(Point point) => primaryPoints.Add(point);
         public void AddSecondary(Point point) => secondaryPoints.Add(point);
-
+        public void Clear()
+        {
+            primaryPoints.Clear();
+            secondaryPoints.Clear();
+        }
         public Line Separate(int start = 0, int end = 600)
         {
             (Line line, Point point) = FindLineWithPoint();
