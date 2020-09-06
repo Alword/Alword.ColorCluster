@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Blazor.Extensions.Canvas.Canvas2D;
 @using Blazor.Extensions;
+@using Alword.ColorCluster.Properties;
 @inject BrowserService service;
 <div @onpointerup=PointerUp style="
     position: fixed;
@@ -13,7 +14,7 @@
               Height="CanvasWidth"
               @ref="_canvasReference"></BECanvas>
     <div style="position: fixed;">
-        <button>@Color</button>
+        <button @onclick="ChangeColor">@Color</button>
     </div>
 </div>
 
@@ -26,7 +27,7 @@
     public int CanvasHeight { get; } = 600;
     public int CanvasWidth { get; } = 600;
 
-    public string Color { get; set; } = "Чёрный";
+    public string Color { get; set; } = Strings.Red;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,7 +46,10 @@
             e.ClientY - (Height - CanvasHeight) / 2,
             2, 0, 2 * Math.PI);
         await ctx.ClosePathAsync();
-        await ctx.SetFillStyleAsync("black");
+        if (Color == Strings.Red)
+            await ctx.SetFillStyleAsync("red");
+        else
+            await ctx.SetFillStyleAsync("blue");
         await ctx.FillAsync();
         StateHasChanged();
     }
@@ -55,5 +59,13 @@
         var dimension = await service.GetDimensions();
         Height = dimension.Height;
         Width = dimension.Width;
+    }
+
+    void ChangeColor()
+    {
+        if (Color == Strings.Red)
+            Color = Strings.Blue;
+        else
+            Color = Strings.Red;
     }
 }
