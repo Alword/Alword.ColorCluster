@@ -22,17 +22,28 @@ namespace Alword.ColorCluster.Services
         public void AddPrimary(Point point) => primaryPoints.Add(point);
         public void AddSecondary(Point point) => secondaryPoints.Add(point);
 
-        public Line Separate()
+        public Line Separate(int start = 0, int end = 600)
         {
-            var line = SeparateColor(primaryPoints);
-            if (line != Line.Empty)
-            {
+            (Line line, Point point) = FindLineWithPoint();
 
-            }
-            else
+            Console.WriteLine($"line {line.A} {line.B} {line.C}");
+
+            if (point != Point.Empty)
             {
-                line = SeparateColor(secondaryPoints);
+                var pointLine = line.ConstructLine(point);
+
+                Console.WriteLine($"line {pointLine.A} {pointLine.B} {pointLine.C}");
+
+                double k = line.A / (double)pointLine.A;
+                var a = pointLine.A * k;
+                var b = pointLine.B * k;
+                var c = pointLine.C * k;
+                var halfC = (c + line.C) / 2;
+                var point1 = Line.Bound(start, a, b, halfC);
+                var point2 = Line.Bound(end, a, b, halfC);
+                return new Line(point1, point2);
             }
+
             return line;
         }
 
@@ -51,8 +62,6 @@ namespace Alword.ColorCluster.Services
 
                     var primarySign = primaryOffsets.Sign();
                     var secondarySign = secondaryOffsets.Sign();
-                    Console.WriteLine($"p:{ primarySign}");
-                    Console.WriteLine($"s:{ secondarySign}");
 
                     var twoPrimaryDots = (primaryOffsets.Count == 0) && (secondarySign != 0);
                     var twoSecondaryDots = (secondaryOffsets.Count == 0) && (primarySign != 0);
@@ -79,6 +88,26 @@ namespace Alword.ColorCluster.Services
 
             static int K(int x, int x1, int x2)
                 => (x - x1) / (x2 - x1);
+        }
+
+        private (Line line, Point point) FindLineWithPoint()
+        {
+            var line = SeparateColor(primaryPoints);
+            Point closestPoint = Point.Empty;
+            if (line != Line.Empty)
+            {
+                closestPoint = line.ClosestPoint(secondaryPoints);
+            }
+
+            else
+            {
+                line = SeparateColor(secondaryPoints);
+                if (line != Line.Empty)
+                {
+                    closestPoint = line.ClosestPoint(primaryPoints);
+                }
+            }
+            return (line, closestPoint);
         }
     }
 }

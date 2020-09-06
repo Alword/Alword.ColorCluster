@@ -51,7 +51,6 @@
         var point = new Point(x, y);
         if (x < 0 || x > CanvasWidth || y < 0 || y > CanvasHeight) return;
 
-        Console.WriteLine($"{x} {y}");
         await ctx.BeginPathAsync();
         await ctx.ArcAsync(x, y, 2, 0, 2 * Math.PI);
         await ctx.ClosePathAsync();
