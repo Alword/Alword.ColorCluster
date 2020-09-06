@@ -2,6 +2,8 @@
 @using Blazor.Extensions.Canvas.Canvas2D;
 @using Blazor.Extensions;
 @using Alword.ColorCluster.Properties;
+@using System.Drawing;
+@inject SeparatingService dots;
 @inject BrowserService service;
 <div @onpointerup=PointerUp style="
     position: fixed;
@@ -15,6 +17,7 @@
               @ref="_canvasReference"></BECanvas>
     <div style="position: fixed;">
         <button @onclick="ChangeColor">@Color</button>
+        <button @onclick="CalculateLine">@Strings.Separate</button>
     </div>
 </div>
 
@@ -40,16 +43,28 @@
     async Task PointerUp(PointerEventArgs e)
     {
         await GetDimensions();
+        double startX = (Width - CanvasWidth) / 2;
+        double startY = (Height - CanvasHeight) / 2;
+
+        int x = (int)Math.Round(e.ClientX - startX);
+        int y = (int)Math.Round(e.ClientY - startY);
+        var point = new Point(x, y);
+        if (x < 0 || x > CanvasWidth || y < 0 || y > CanvasHeight) return;
+
+        Console.WriteLine($"{x} {y}");
         await ctx.BeginPathAsync();
-        await ctx.ArcAsync(
-            e.ClientX - ((Width - CanvasWidth) / 2),
-            e.ClientY - (Height - CanvasHeight) / 2,
-            2, 0, 2 * Math.PI);
+        await ctx.ArcAsync(x, y, 2, 0, 2 * Math.PI);
         await ctx.ClosePathAsync();
         if (Color == Strings.Red)
+        {
+            dots.AddPrimary(point);
             await ctx.SetFillStyleAsync("red");
+        }
         else
+        {
+            dots.AddSecondary(point);
             await ctx.SetFillStyleAsync("blue");
+        }
         await ctx.FillAsync();
         StateHasChanged();
     }
@@ -67,5 +82,18 @@
             Color = Strings.Blue;
         else
             Color = Strings.Red;
+    }
+
+    async Task CalculateLine()
+    {
+        var line = dots.Separate();
+        await ctx.BeginPathAsync();
+        await ctx.MoveToAsync(line.Point1.X, line.Point1.Y);
+        await ctx.LineToAsync(line.Point2.X, line.Point2.Y);
+        await ctx.StrokeAsync();
+        await ctx.SetStrokeStyleAsync("green");
+        await ctx.FillAsync();
+        await ctx.ClosePathAsync();
+        StateHasChanged();
     }
 }

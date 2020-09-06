@@ -24,13 +24,26 @@ namespace Alword.ColorCluster.Services
 
         public Line Separate()
         {
-            var currentPoint = primaryPoints;
-            for (int i = 0; i < currentPoint.Count; i++)
+            var line = SeparateColor(primaryPoints);
+            if (line != Line.Empty)
             {
-                for (int j = i; j < currentPoint.Count; j++)
+
+            }
+            else
+            {
+                line = SeparateColor(secondaryPoints);
+            }
+            return line;
+        }
+
+        private Line SeparateColor(List<Point> currentGroup)
+        {
+            for (int i = 0; i < currentGroup.Count; i++)
+            {
+                for (int j = i; j < currentGroup.Count; j++)
                 {
-                    var point1 = currentPoint[i];
-                    var point2 = currentPoint[j];
+                    var point1 = currentGroup[i];
+                    var point2 = currentGroup[j];
                     if (point1 == point2) continue;
 
                     var primaryOffsets = Offset(point1, point2, primaryPoints);
@@ -38,10 +51,14 @@ namespace Alword.ColorCluster.Services
 
                     var primarySign = primaryOffsets.Sign();
                     var secondarySign = secondaryOffsets.Sign();
+                    Console.WriteLine($"p:{ primarySign}");
+                    Console.WriteLine($"s:{ secondarySign}");
 
-                    var isSplitLine = (primarySign * secondarySign != 0) && (secondarySign != primarySign);
-                    if (isSplitLine)
-                        return new Line(point1, point2);
+                    var twoPrimaryDots = (primaryOffsets.Count == 0) && (secondarySign != 0);
+                    var twoSecondaryDots = (secondaryOffsets.Count == 0) && (primarySign != 0);
+                    var isSplitLine = (primarySign * secondarySign < 0);
+
+                    if (isSplitLine || twoPrimaryDots || twoSecondaryDots) return new Line(point1, point2);
                 }
             }
             return Line.Empty;

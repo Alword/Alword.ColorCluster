@@ -123,4 +123,7 @@
   <data name="Red" xml:space="preserve">
     <value>Красный</value>
   </data>
+  <data name="Separate" xml:space="preserve">
+    <value>Разделить</value>
+  </data>
 </root>

@@ -77,5 +77,14 @@ namespace Alword.ColorCluster.Properties {
                 return ResourceManager.GetString("Red", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Разделить.
+        /// </summary>
+        public static string Separate {
+            get {
+                return ResourceManager.GetString("Separate", resourceCulture);
+            }
+        }
     }
 }
